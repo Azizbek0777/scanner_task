@@ -274,15 +274,21 @@ class _QRViewExampleState extends State<QRViewExample> {
                 snackBar(r'The value returned by the scanner does not have numbers separated by the "\n" character');
               }
             }
+            else {
+              snackBar('There was no information from the scanner');
+            }
           }
           else {
-            if (int.parse(result!.code!) <= 10000) {
-              result = scanData;
-              number3 = int.parse(result!.code!);
-              scanner = true;
-            }
-            else {
-              snackBar('The number on the scanner is greater than 10,000');
+            if (result!.code!.contains(RegExp(r"^[0-9]+$"))) {
+              if (int.parse(result!.code!) <= 10000) {
+                result = scanData;
+                number3 = int.parse(result!.code!);
+                scanner = true;
+              } else {
+                snackBar('The number on the scanner is greater than 10,000');
+              }
+            } else {
+              snackBar('There was no information from the scanner');
             }
           }
         }

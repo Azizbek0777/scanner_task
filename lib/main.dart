@@ -299,6 +299,7 @@ class _QRViewExampleState extends State<QRViewExample> {
     });
   }
 
+
   snackBar(String content) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       duration: const Duration(milliseconds: 100),

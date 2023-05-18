@@ -337,6 +337,7 @@ String multiplyByTwo(String binaryNumber) {
   return result;
 }
 
+
 String sumOfTwoDigits(String num1, String num2) {
   List<int> sum = [];
   int maxLength = num1.length > num2.length ? num1.length : num2.length;

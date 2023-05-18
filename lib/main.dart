@@ -163,7 +163,7 @@ class _QRViewExampleState extends State<QRViewExample> {
                               style: const TextStyle(fontSize: 13),
                             )
                           else
-                            Text('${describeEnum(result!.format)}  \nData: 2^$number3=$number3', style: const TextStyle(fontSize: 13))
+                            Text('${describeEnum(result!.format)}  \nData: 2^$number2=$number3', style: const TextStyle(fontSize: 13))
                         else
                           const Text('Scan a code', style: TextStyle(fontSize: 13)),
                       ],
@@ -250,7 +250,6 @@ class _QRViewExampleState extends State<QRViewExample> {
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
       overlay: QrScannerOverlayShape(borderColor: Colors.red, borderRadius: 10, borderLength: 30, borderWidth: 10, cutOutSize: scanArea),
-      // onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
     );
   }
 
@@ -261,11 +260,11 @@ class _QRViewExampleState extends State<QRViewExample> {
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         result = scanData;
-        print('_QRViewExampleState._onQRViewCreated');
         if (result != null) {
           if (widget.isAdd) {
-            if (result!.code!.length <= 200) {
-              resultList = (result!.code!.toString()).split("");
+            if (result!.code!.length < 400) {
+              resultList = (result!.code!.toString()).split(r"\n");
+              print('_QRViewExampleState._onQRViewCreated ${resultList!.length}');
               if (resultList!.length == 2) {
                 number1 = resultList![0];
                 number2 = resultList![1];
@@ -281,8 +280,9 @@ class _QRViewExampleState extends State<QRViewExample> {
           }
           else {
             if (result!.code!.contains(RegExp(r"^[0-9]+$"))) {
-              if (int.parse(result!.code!) <= 10000) {
+              if (int.parse(result!.code!) < 10000) {
                 result = scanData;
+                number2=result!.code!;
                 number3=  calculatePowerOfTwo(int.parse(result!.code!));
                 scanner = true;
               } else {

@@ -111,9 +111,9 @@ class _QRViewExampleState extends State<QRViewExample> {
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  BigInt? number1;
-  BigInt? number2;
-  int? number3;
+  String? number1;
+  String? number2;
+  String? number3;
   List<String>? resultList;
   bool scanner = false;
 
@@ -159,11 +159,11 @@ class _QRViewExampleState extends State<QRViewExample> {
                         if (result != null && scanner)
                           if (widget.isAdd)
                             Text(
-                              '${describeEnum(result!.format)}  \nData: N1:$number1 + N2:$number2 = ${number1! + number2!}',
+                              '${describeEnum(result!.format)}  \nData: N1:$number1 + N2:$number2 = $number3',
                               style: const TextStyle(fontSize: 13),
                             )
                           else
-                            Text('${describeEnum(result!.format)}  \nData: 2^$number3=${BigInt.from(2).pow(number3!)}', style: const TextStyle(fontSize: 13))
+                            Text('${describeEnum(result!.format)}  \nData: 2^$number3=$number3', style: const TextStyle(fontSize: 13))
                         else
                           const Text('Scan a code', style: TextStyle(fontSize: 13)),
                       ],
@@ -265,10 +265,11 @@ class _QRViewExampleState extends State<QRViewExample> {
         if (result != null) {
           if (widget.isAdd) {
             if (result!.code!.length <= 200) {
-              resultList = (result!.code!.toString()).split(r'\n');
+              resultList = (result!.code!.toString()).split("");
               if (resultList!.length == 2) {
-                number1 = BigInt.parse(resultList![0]);
-                number2 = BigInt.parse(resultList![1]);
+                number1 = resultList![0];
+                number2 = resultList![1];
+                number3=sumOfTwoDigits(resultList![0], resultList![1]);
                 scanner = true;
               } else {
                 snackBar(r'The value returned by the scanner does not have numbers separated by the "\n" character');
@@ -282,7 +283,7 @@ class _QRViewExampleState extends State<QRViewExample> {
             if (result!.code!.contains(RegExp(r"^[0-9]+$"))) {
               if (int.parse(result!.code!) <= 10000) {
                 result = scanData;
-                number3 = int.parse(result!.code!);
+                number3=  calculatePowerOfTwo(int.parse(result!.code!));
                 scanner = true;
               } else {
                 snackBar('The number on the scanner is greater than 10,000');
@@ -307,4 +308,55 @@ class _QRViewExampleState extends State<QRViewExample> {
       content: Text(content),
     ));
   }
+}
+String calculatePowerOfTwo(int exponent) {
+  if (exponent < 0) {
+    throw ArgumentError('Exponent must be non-negative.');
+  }
+
+  String result = '1';
+  for (int i = 0; i < exponent; i++) {
+    result = multiplyByTwo(result);
+  }
+  return result;
+}
+
+String multiplyByTwo(String binaryNumber) {
+  String result = '';
+  int carry = 0;
+  for (int i = binaryNumber.length - 1; i >= 0; i--) {
+    int digit = int.parse(binaryNumber[i]);
+    int product = (digit * 2) + carry;
+    int newDigit = product % 10;
+    carry = product ~/ 10;
+    result = newDigit.toString() + result;
+  }
+  if (carry > 0) {
+    result = carry.toString() + result;
+  }
+  return result;
+}
+
+String sumOfTwoDigits(String num1, String num2) {
+  List<int> sum = [];
+  int maxLength = num1.length > num2.length ? num1.length : num2.length;
+  int carry = 0;
+
+  for (int i = 0; i < maxLength; i++) {
+    int digit1 = i < num1.length ? int.parse(num1[num1.length - 1 - i]) : 0;
+    int digit2 = i < num2.length ? int.parse(num2[num2.length - 1 - i]) : 0;
+
+    int currentSum = digit1 + digit2 + carry;
+    int digit = currentSum % 10;
+    carry = currentSum ~/ 10;
+
+    sum.add(digit);
+  }
+
+  if (carry > 0) {
+    sum.add(carry);
+  }
+
+  sum = sum.reversed.toList();
+  return sum.join();
 }

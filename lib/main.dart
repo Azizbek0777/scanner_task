@@ -263,8 +263,9 @@ class _QRViewExampleState extends State<QRViewExample> {
         if (result != null) {
           if (widget.isAdd) {
             if (result!.code!.length < 400) {
-              resultList = (result!.code!.toString()).split(r"\n");
+              resultList = result!.code!.split("\n");
               print('_QRViewExampleState._onQRViewCreated ${resultList!.length}');
+              print('_QRViewExampleState._onQRViewCreated1 ${result!.code!.runtimeType}');
               if (resultList!.length == 2) {
                 number1 = resultList![0];
                 number2 = resultList![1];
